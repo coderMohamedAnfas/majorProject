@@ -20,6 +20,56 @@ import tempfile
 # from django.core.files.storage import default_storage
 # from .models import Student, Department
 
+import random
+from django.core.mail import send_mail
+
+from datetime import timedelta
+from django.utils.timezone import now
+
+def request_otp(request):
+    if request.method == 'POST':
+        phone_number = request.POST.get('phone_number')
+        try:
+            staff = Staff.objects.get(phone_number=phone_number)
+            otp = generate_otp()
+            staff.otp = otp
+            staff.otp_generated_at = now()
+            staff.save()
+            send_otp_via_email(otp, staff.email)
+            messages.success(request, 'OTP sent to your email.')
+            return redirect('login')
+        except Staff.DoesNotExist:
+            messages.error(request, 'Phone number not registered.')
+            return redirect('request_otp')
+    return render(request, 'request_otp.html')
+
+def generate_otp():
+    return str(random.randint(100000, 999999))
+
+def send_otp_via_email(otp, email):
+    subject = 'Your OTP Code'
+    message = f'Your OTP code is {otp}. Please use this to login.'
+    send_mail(subject, message, 'noreply@example.com', [email])
+
+def reset_password(request):
+    if request.method == 'POST':
+        phone_number = request.POST.get('phone_number')
+        otp = request.POST.get('otp')
+        new_password = request.POST.get('new_password')
+
+        try:
+            staff = Staff.objects.get(phone_number=phone_number, otp=otp)
+            staff.set_password(new_password)
+            staff.otp = None
+            staff.save()
+            messages.success(request, 'Password reset successfully.')
+            return redirect('login')
+        except Staff.DoesNotExist:
+            messages.error(request, 'Invalid OTP or phone number.')
+    
+    return render(request, 'reset_password.html')
+
+#  otp features and password reset ends here
 
 def student_id_preview(request):
     department_id = request.GET.get('department')
@@ -96,10 +146,15 @@ def custom_login_view(request):
 
         elif user_type == 'staff':
             phone_number = request.POST.get('phone_number')
-            password = request.POST.get('password', None)
-            otp = request.POST.get('otp', None)
-            user = authenticate(request, phone_number=phone_number, password=password, otp=otp)
-            print(type(user))
+            auth_method = request.POST.get('auth_method')
+            password = request.POST.get('password')
+            otp = request.POST.get('otp')
+            
+            if auth_method == 'password':
+                user = authenticate(request, phone_number=phone_number, password=password)
+            elif auth_method == 'otp':
+                user = authenticate(request, phone_number=phone_number, otp=otp)
+
             if user is not None:
                 if user.designation == 'Admin':
                     login(request, user)

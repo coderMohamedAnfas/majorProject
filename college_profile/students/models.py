@@ -144,6 +144,7 @@ class Staff(AbstractUser):
     designation = models.CharField(max_length=50, choices=DESIGNATION_CHOICES)
     department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True, blank=True)
     otp = models.CharField(max_length=6, blank=True, null=True)
+    otp_generated_at = models.DateTimeField(null=True, blank=True)
     email = models.EmailField(default="email@gmail.com")
     USERNAME_FIELD = 'phone_number'
     REQUIRED_FIELDS = ['designation','email']
