@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <h2>Student ID Preview</h2>
+
+    <form method="get" class="form-inline mb-3">
+        <div class="form-group mb-2">
+            <label for="department" class="sr-only">Department</label>
+            <select id="department" name="department" class="form-control">
+                <option value="">All Departments</option>
+                {% for department in departments %}
+                    <option value="{{ department.id }}" {% if department.id|stringformat:"s" == filter_department %}selected{% endif %}>{{ department.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group mx-sm-3 mb-2">
+            <label for="passout_year" class="sr-only">Passout Year</label>
+            <input type="number" id="passout_year" name="passout_year" class="form-control" placeholder="Passout Year" value="{{ filter_passout_year }}">
+        </div>
+        <div class="form-group mx-sm-3 mb-2">
+            <label for="admission_no" class="sr-only">Admission No</label>
+            <input type="text" id="admission_no" name="admission_no" class="form-control" placeholder="Admission No" value="{{ filter_admission_no }}">
+        </div>
+        <button type="submit" class="btn btn-primary mb-2">Filter</button>
+    </form>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Admission No</th>
+                <th>Full Name</th>
+                <th>Department</th>
+                <th>Passout Year</th>
+                <th>Preview ID</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+                <tr>
+                    <td>{{ student.admission_no }}</td>
+                    <td>{{ student.full_name }}</td>
+                    <td>{{ student.department }}</td>
+                    <td>{{ student.passout_year }}</td>
+                    <td>
+                        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#studentIdModal{{ student.id }}">Preview</button>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="5">No students found</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% for student in students %}
+    <!-- Modal -->
+    <div class="modal fade" id="studentIdModal{{ student.id }}" tabindex="-1" aria-labelledby="studentIdModalLabel{{ student.id }}" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="studentIdModalLabel{{ student.id }}">Student ID Card Preview</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    {% if student.image and student.image.url %}
+                    <img src="{{ student.image.url }}" alt="Student Profile Image" width="133" height="133" class="card-img-top">
+                    {% endif %}
+                    <br>
+                    <p><strong>Admission No:</strong> {{ student.admission_no }} &nbsp; &nbsp; &nbsp; &nbsp; <strong>PRN:</strong> {{ student.PRN }}</p>
+                    <p><strong>Full Name:</strong> {{ student.full_name }} &nbsp; &nbsp; &nbsp; &nbsp; <strong>Phone No:</strong> {{ student.phone_number }}</p>
+                    <p><strong>Department:</strong> {{ student.department }}  &nbsp; &nbsp; &nbsp; &nbsp;</p>
+                    <p><strong>Passout Year:</strong> {{ student.passout_year }} &nbsp; &nbsp; &nbsp; &nbsp; <strong>Completed / Approved :</strong>
+                        {% if student.is_complete %}
+                            <i class="fas fa-check-circle" style="color: green;"></i>
+                        {% else %}
+                            <i class="fas fa-times-circle" style="color: red;"></i>
+                        {% endif %}
+                        /
+                        {% if student.is_approved %}
+                            <i class="fas fa-check-circle" style="color: green;"></i>
+                        {% else %}
+                            <i class="fas fa-times-circle" style="color: red;"></i>
+                        {% endif %}
+                    <!-- </p>  {% if student.is_complete %} True {% else%} False {% endif %} /  {% if student.is_approved %} True {% else%} False {% endif %}</p> -->
+                    <!-- Add other student details as needed -->
+
+                   
+                </div>
+                <div class="modal-footer">
+                    <form method="post" action="{% url 'approve_student' student.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success">Approve</button>
+                    </form>
+                    <form method="post" action="{% url 'reject_student' student.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Reject</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

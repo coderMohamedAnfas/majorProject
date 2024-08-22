@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <h2>Student ID Detail</h2>
+    <div class="card">
+        <div class="card-body">
+            <img src="{{ student.image.url }}" alt="" width="78" height="78">
+            <h5 class="card-title">{{ student.full_name }}</h5>
+            <p class="card-text"><strong>Admission No:</strong> {{ student.admission_no }}</p>
+            <p class="card-text"><strong>Department:</strong> {{ student.department.name }}</p>
+            <p class="card-text"><strong>Passout Year:</strong> {{ student.passout_year }}</p>
+            <p class="card-text"><strong>Guardian:</strong> {{ student.parent_name }}</p>
+            
+        </div>
+    </div>
+</div>
+{% endblock %}

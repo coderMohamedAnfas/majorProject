@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <style>
+        body {
+            display: flex;
+            min-height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .wrapper {
+            display: flex;
+            width: 100%;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #343a40;
+            color: white;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+        .sidebar.closed {
+            transform: translateX(-250px);
+        }
+        .toggle-btn {
+            position: absolute;
+            top: 20px;
+            left: 250px;
+            background-color: #343a40;
+            border: none;
+            color: white;
+            font-size: 24px;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            z-index: 1100;
+        }
+        .sidebar.closed + .toggle-btn {
+            left: 0;
+        }
+        .sidebar .nav-item {
+            padding: 15px 20px;
+            cursor: pointer;
+        }
+        .sidebar .nav-item:hover, .sidebar .nav-item.active {
+            background-color: #495057;
+        }
+        .sidebar .nav-link {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        .sidebar .nav-link i {
+            margin-right: 10px;
+        }
+        .content {
+            flex-grow: 1;
+            margin-left: 250px;
+            padding: 20px;
+            transition: margin-left 0.3s ease;
+        }
+        .content.closed {
+            margin-left: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="sidebar">
+            <ul class="navbar-nav flex-column">
+                <li class="nav-item {% if request.path == '/admin/dashboard/' %}active{% endif %}">
+                    <a class="nav-link" href="{% url 'admin_dashboard' %}"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                </li>
+                <li class="nav-item {% if request.path == '/admin/home/' %}active{% endif %}">
+                    <a class="nav-link" href="{% url 'home' %}"><i class="fas fa-home"></i> Home</a>
+                </li>
+                <li class="nav-item {% if request.path == '/admin/student-management/' %}active{% endif %}">
+                    <a class="nav-link" href="{% url 'student_management' %}"><i class="fas fa-users"></i> Student Management</a>
+                </li>
+                <li class="nav-item {% if request.path == '/admin/staff-management/' %}active{% endif %}">
+                    <a class="nav-link" href="{% url 'staff_management' %}"><i class="fas fa-chalkboard-teacher"></i> Staff Management</a>
+                </li>
+                <li class="nav-item {% if request.path == '/admin/id-card-generation/' %}active{% endif %}">
+                    <a class="nav-link" href="{% url 'id_card_generation' %}"><i class="fas fa-id-card"></i> Generate ID Card</a>
+                </li>
+                <li class="nav-item {% if request.path == '/admin/student-id-preview/' %}active{% endif %}">
+                    <a class="nav-link" href="{% url 'student_id_preview' %}"><i class="fas fa-eye"></i> ID Preview</a>
+                </li>
+                <li class="nav-item {% if request.path == '/admin/student-approval/' %}active{% endif %}">
+                    <a class="nav-link" href="{% url 'student_approval' %}"><i class="fas fa-check"></i> Student Approval</a>
+                </li>
+                <li class="nav-item {% if request.path == '/profile/' %}active{% endif %}">
+                    <a class="nav-link" href="{% url 'profile' %}"><i class="fas fa-user"></i> Profile</a>
+                </li>
+                <li class="nav-item {% if request.path == '/logout/' %}active{% endif %}">
+                    <a class="nav-link" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </li>
+                
+                <li class="nav-item {% if request.path == '/admin/student-management/' %}active{% endif %}">
+                    <a class="nav-link" href="{% url 'student_management' %}"><i class="fas fa-users"></i> Student Management</a>
+                </li>
+                <li class="nav-item {% if request.path == '/admin/staff-management/' %}active{% endif %}">
+                    <a class="nav-link" href="{% url 'staff_management' %}"><i class="fas fa-chalkboard-teacher"></i> Staff Management</a>
+                </li>
+                <li class="nav-item {% if request.path == '/admin/id-card-generation/' %}active{% endif %}">
+                    <a class="nav-link" href="{% url 'id_card_generation' %}"><i class="fas fa-id-card"></i> Generate ID Card</a>
+                </li>
+                <li class="nav-item {% if request.path == '/admin/student-id-preview/' %}active{% endif %}">
+                    <a class="nav-link" href="{% url 'student_id_preview' %}"><i class="fas fa-eye"></i> ID Preview</a>
+                </li>
+                <li class="nav-item {% if request.path == '/admin/student-approval/' %}active{% endif %}">
+                    <a class="nav-link" href="{% url 'student_approval' %}"><i class="fas fa-check"></i> Student Approval</a>
+                </li>
+                <li class="nav-item {% if request.path == '/profile/' %}active{% endif %}">
+                    <a class="nav-link" href="{% url 'profile' %}"><i class="fas fa-user"></i> Profile</a>
+                </li>
+                <li class="nav-item {% if request.path == '/logout/' %}active{% endif %}">
+                    <a class="nav-link" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </li>
+                
+            </ul>
+        </div>
+        <button class="toggle-btn"><i class="fas fa-times"></i></button>
+        <div class="content">
+            <div class="container mt-4">
+                {% if messages %}
+                <ul class="messages">
+                  {% for message in messages %}
+                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                  {% endfor %}
+                </ul>
+                {% endif %}
+                {% block content %}
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script>
+        document.querySelector('.toggle-btn').addEventListener('click', function() {
+            const sidebar = document.querySelector('.sidebar');
+            const content = document.querySelector('.content');
+            sidebar.classList.toggle('closed');
+            content.classList.toggle('closed');
+            
+            const icon = this.querySelector('i');
+            icon.classList.toggle('fa-bars');
+            icon.classList.toggle('fa-times');
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

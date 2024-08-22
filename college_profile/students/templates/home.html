@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Download Student Data</h2>
+
+    <!-- Filter Form -->
+    <form method="get" class="form-inline mb-3">
+        <select name="department" class="form-control mr-2">
+            <option value="">All Departments</option>
+            {% for department in departments %}
+                <option value="{{ department.id }}" {% if request.GET.department == department.id|stringformat:"s" %}selected{% endif %}>{{ department.name }}</option>
+            {% endfor %}
+        </select>
+        <input type="text" name="passout_year" class="form-control mr-2" placeholder="Passout Year" value="{{ request.GET.passout_year }}">
+        <button type="submit" class="btn btn-primary">Filter</button>
+    </form>
+
+    <!-- Export Form -->
+    <form method="post" class="mt-4">
+        {% csrf_token %}
+        <input type="hidden" name="department" value="{{ request.GET.department }}">
+        <input type="hidden" name="passout_year" value="{{ request.GET.passout_year }}">
+
+        <div class="form-group">
+            <label for="export_type">Choose export format:</label>
+            <select name="export_type" id="export_type" class="form-control">
+                <option value="excel" name="excel">Excel</option>
+                <option value="csv" name="csv">CSV</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-success">Download Data</button>
+    </form>
+</div>
+{% endblock %}

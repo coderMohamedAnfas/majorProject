@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <h2>Staff Management</h2>
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="individual-tab" data-toggle="tab" href="#individual" role="tab" aria-controls="individual" aria-selected="true">Create Individual Student</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="bulk-tab" data-toggle="tab" href="#bulk" role="tab" aria-controls="bulk" aria-selected="false">Upload Bulk Students</a>
+        </li>
+    </ul>
+    <div class="tab-content mt-4" id="myTabContent">
+        <div class="tab-pane fade show active" id="individual" role="tabpanel" aria-labelledby="individual-tab">
+            <form method="post" action="{% url 'create_staff' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="phone_number">Phone Number</label>
+                    <input type="text" class="form-control" id="phone_number" name="ph_no" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" class="form-control" id="password" name="password" required>
+                </div>
+                <!-- Add more fields as necessary -->
+                <button type="submit" class="btn btn-primary">Create Staff</button>
+            </form>
+        </div>
+        <div  class="tab-pane fade" id="bulk" role="tabpanel" aria-labelledby="bulk-tab">
+            <form method="post" enctype="multipart/form-data" action="{% url 'create_staff' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label  for="file">Upload CSV/Excel File</label>
+                    <input disabled type="file" class="form-control-file" id="file" accept=".xlsx,.xls,.csv" name="file" required>
+                </div>
+                <button disabled type="submit" class="btn btn-primary">Upload Students</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

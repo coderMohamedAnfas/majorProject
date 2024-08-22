@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Staff Profile</title>
+</head>
+<body>
+    <h1>Staff Profile</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label for="designation">Designation:</label>
+        <select id="designation" name="designation">
+            {% for code, label in user.DESIGNATION_CHOICES %}
+                <option value="{{ code }}" {% if user.designation == code %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select><br><br>
+        
+        <label for="department">Department:</label>
+        <select id="department" name="department">
+            {% for department in departments %}
+                <option value="{{ department.id }}" {% if user.department == department %}selected{% endif %}>{{ department.name }}</option>
+            {% endfor %}
+        </select><br><br>
+        
+        <label for="phone_number">Phone Number:</label>
+        <input type="text" id="phone_number" name="phone_number" value="{{ user.phone_number }}"><br><br>
+
+        <button type="submit">Update Profile</button>
+    </form>
+</body>
+</html>

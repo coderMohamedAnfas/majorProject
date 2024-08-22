@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Student Approval</h2>
+
+    <!-- Filter Form -->
+    <form method="get" class="form-inline mb-3">
+        <select name="department" class="form-control mr-2">
+            <option value="">All Departments</option>
+            {% for department in departments %}
+                <option value="{{ department.id }}" {% if request.GET.department == department.id|stringformat:"s" %}selected{% endif %}>{{ department.name }}</option>
+            {% endfor %}
+        </select>
+        <input type="text" name="passout_year" class="form-control mr-2" placeholder="Passout Year" value="{{ request.GET.passout_year }}">
+        <input type="text" name="admission_no" class="form-control mr-2" placeholder="Admission No" value="{{ request.GET.admission_no }}">
+        <select name="approval_status" class="form-control mr-2">
+            <option value="">All Statuses</option>
+            <option value="approved" {% if request.GET.approval_status == 'approved' %}selected{% endif %}>Approved</option>
+            <option value="not_approved" {% if request.GET.approval_status == 'not_approved' %}selected{% endif %}>Not Approved</option>
+        </select>
+        <button type="submit" class="btn btn-primary">Filter</button>
+    </form>
+
+    <!-- Bulk Approval/Rejection Form -->
+    <form method="post">
+        {% csrf_token %}
+
+        <!-- Students Listing -->
+        <div class="row">
+            {% for student in students %}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        {% if student.image and student.image.url %}
+                            <img src="{{ student.image.url }}"  draggable="false"  alt="Student Profile Image" width="170" height="170" class="img-thumbnail">
+                        {% endif %}
+                        <div class="card-body">
+                            <!-- Checkbox for Bulk Selection -->
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="student_ids" value="{{ student.id }}">
+                                <label class="form-check-label" for="student_ids">
+                                    <h5 class="card-title">{{ student.full_name }}</h5>
+                                </label>
+                            </div>
+                            <p class="card-text">PRN: {{ student.PRN }}</p>
+                            <p class="card-text">Department: {{ student.department.name }}</p>
+                            <p class="card-text">
+                                Completed: 
+                                {% if student.is_complete %}
+                                    <i class="fas fa-check-circle" style="color: green;"></i>
+                                {% else %}
+                                    <i class="fas fa-times-circle" style="color: red;"></i>
+                                {% endif %}
+                            </p>
+                            <p class="card-text">
+                                Approved: 
+                                {% if student.is_approved %}
+                                    <i class="fas fa-check-circle" style="color: green;"></i>
+                                {% else %}
+                                    <i class="fas fa-times-circle" style="color: red;"></i>
+                                {% endif %}
+                            </p>
+                            <div class="d-flex justify-content-between">
+                                <form method="post" style="display: inline;">
+                                    {% csrf_token %}
+                                    {% if student.is_approved %}
+                                    <input type="hidden" name="student_id" value="{{ student.id }}">
+                                    <input type="hidden" name="action" value="approve">
+                                    <button type="submit" disabled class="btn btn-success btn-sm">Approve</button>
+                                    {% else %}
+                                    <input type="hidden" name="student_id" value="{{ student.id }}">
+                                    <input type="hidden" name="action" value="approve">
+                                    <button type="submit" draggable="" class="btn btn-success btn-sm">Approve</button>
+                                    {% endif %}
+                                </form>
+                                <form method="post" style="display: inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="student_id" value="{{ student.id }}">
+                                    <input type="hidden" name="action" value="reject">
+                                    <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Bulk Action Buttons -->
+        <div class="form-group mt-3">
+            <button type="submit" name="action1" value="approve" class="btn btn-success">Approve Selected</button>
+            <button type="submit" name="action1" value="reject" class="btn btn-danger">Reject Selected</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
