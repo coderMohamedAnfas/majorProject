@@ -30,6 +30,8 @@ urlpatterns = [
     # path('student_id_detail/<int:pk>/', views.student_id_detail, name='student_id_detail')
   path('student_approval/', views.student_approval_view, name='student_approval'),
 
+     path('request_otp/', views.request_otp, name='request_otp'),
+    path('reset_password/', views.reset_password, name='reset_password'),
 ]
 
 
