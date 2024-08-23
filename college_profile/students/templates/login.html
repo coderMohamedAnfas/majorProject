@@ -173,9 +173,8 @@
     </div>
 </div>
 <div class="d-grid gap-2">
-    <!-- This is the Request OTP button, initially hidden -->
     <a href="{% url 'request_otp' %}" id="request_otp_button" class="btn btn-secondary d-none">Request OTP</a>
-    <a href="{% url 'reset_password' %}"  id="reset_password" class="btn btn-link">Forgot Password?</a>
+    <a href="{% url 'request_otp' %}"  id="reset_password" class="btn btn-link d-none">Forgot Password?</a>
 </div>
 
 

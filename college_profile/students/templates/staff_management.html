@@ -2,49 +2,121 @@
 {% block content %}
 <div class="container">
     <h2>Staff Management</h2>
-    <ul class="nav nav-tabs" id="myTab" role="tablist">
+
+    <!-- Department Filter Navbar -->
+    <ul class="nav nav-pills mb-4">
         <li class="nav-item">
-            <a class="nav-link active" id="individual-tab" data-toggle="tab" href="#individual" role="tab" aria-controls="individual" aria-selected="true">Create Individual Student</a>
+            <a class="nav-link {% if not selected_department %}active{% endif %}" href="{% url 'staff_management' %}">All Departments</a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link" id="bulk-tab" data-toggle="tab" href="#bulk" role="tab" aria-controls="bulk" aria-selected="false">Upload Bulk Students</a>
-        </li>
+        {% for department in departments %}
+            <li class="nav-item">
+                <a class="nav-link {% if selected_department == department.id|stringformat:"s" %}active{% endif %}" href="{% url 'staff_management' %}?department={{ department.id }}">{{ department.name }}</a>
+            </li>
+        {% endfor %}
     </ul>
-    <div class="tab-content mt-4" id="myTabContent">
-        <div class="tab-pane fade show active" id="individual" role="tabpanel" aria-labelledby="individual-tab">
-            <form method="post" action="{% url 'create_staff' %}">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label for="phone_number">Phone Number</label>
-                    <input type="text" class="form-control" id="phone_number" name="ph_no" required>
+
+    <!-- Staff Members List -->
+    <div class="table-responsive mb-4">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Phone Number</th>
+                    <th>Email</th>
+                    <th>Department</th>
+                    <th>Designation</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for staff in staff_members %}
+                    <tr>
+                        <td>{{ staff.phone_number }}</td>
+                        <td>{{ staff.email }}</td>
+                        <td>{{ staff.department.name }}</td>
+                        <td>{{ staff.designation }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Buttons to trigger modals -->
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createStaffModal">
+        Create Individual Staff
+    </button>
+    <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#uploadStaffModal">
+        Upload Bulk Staff
+    </button>
+
+    <!-- Modal for creating individual staff -->
+    <div class="modal fade" id="createStaffModal" tabindex="-1" role="dialog" aria-labelledby="createStaffModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createStaffModalLabel">Create Individual Staff</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" class="form-control" id="password" name="password" required>
+                <div class="modal-body">
+                    <form method="post" action="{% url 'create_staff' %}">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="phone_number">Phone Number</label>
+                            <input type="text" class="form-control" id="phone_number" name="ph_no" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="designation" class="form-label">Designation</label>
+                            <select class="form-select" id="designation" name="designation" required>
+                                <option value="HOD">Head of Department</option>
+                                <option value="Lecturer">Lecturer</option>
+                                <option value="Tutor">Tutor</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="department">Department</label>
+                            <select class="form-select" id="department" name="department_name">
+                                {% for department in departments %}
+                                    <option value="{{ department.id }}">{{ department.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Create Staff</button>
+                    </form>
                 </div>
-                <div class="mb-3">
-                    <label for="designation" class="form-label">Designation</label>
-                    <select class="form-select" id="designation" name="designation" required>
-                        <option value="HOD">Head of Department</option>
-                        <option value="Lecturer">Lecturer</option>
-                        <option value="Tutor">Tutor</option>
-                        <option value="Other">Other</option>
-                        
-                    </select>
-                </div>
-                <!-- Add more fields as necessary -->
-                <button type="submit" class="btn btn-primary">Create Staff</button>
-            </form>
+            </div>
         </div>
-        <div  class="tab-pane fade" id="bulk" role="tabpanel" aria-labelledby="bulk-tab">
-            <form method="post" enctype="multipart/form-data" action="{% url 'create_staff' %}">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label  for="file">Upload CSV/Excel File</label>
-                    <input disabled type="file" class="form-control-file" id="file" accept=".xlsx,.xls,.csv" name="file" required>
+    </div>
+
+    <!-- Modal for uploading bulk staff -->
+    <div class="modal fade" id="uploadStaffModal" tabindex="-1" role="dialog" aria-labelledby="uploadStaffModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="uploadStaffModalLabel">Upload Bulk Staff</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
-                <button disabled type="submit" class="btn btn-primary">Upload Students</button>
-            </form>
+                <div class="modal-body">
+                    <form method="post" enctype="multipart/form-data" action="{% url 'create_staff' %}">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="file">Upload CSV/Excel File</label>
+                            <input disabled type="file" class="form-control-file" id="file" accept=".xlsx,.xls,.csv" name="file" required>
+                        </div>
+                        <button disabled type="submit" class="btn btn-primary">Upload Staff</button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>

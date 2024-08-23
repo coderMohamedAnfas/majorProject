@@ -100,7 +100,20 @@ def student_management(request):
     return render(request, 'student_management.html')
 
 def staff_management(request):
-    return render(request, 'staff_management.html')
+    departments = Department.objects.all()
+    selected_department = request.GET.get('department')
+    
+    if selected_department:
+        staff_members = Staff.objects.filter(department__id=selected_department)
+    else:
+        staff_members = Staff.objects.all()
+    
+    return render(request, 'staff_management.html', {
+        'departments': departments,
+        'staff_members': staff_members,
+        'selected_department': selected_department,
+    })
+
 
 def admin_dashboard(request):
     # filter_department = request.GET.get('department')
@@ -302,11 +315,19 @@ def create_staff(request):
         # email = request.POST.get('email')
         pwd = request.POST.get('password')
         desg = request.POST.get('designation')
+        email = request.POST.get('email')
+        department_id = request.POST.get('department_name')  # Get the department id from the form
+        
         try:
+            # Fetch the selected department using its id
+            department = Department.objects.get(id=department_id)
             s = Staff.objects.create_user(
                     phone_number=phone_number,
                     password=pwd,
-                    designation = desg)
+                    designation = desg, 
+                    email=email,
+                    department=department
+                    )
             messages.success(request,"staff created")
         except:
             messages.warning(request,"MUST BE VALID CREDITIONALS !!!!!")

@@ -15,12 +15,12 @@
         </select><br><br>
         
         <label for="department">Department:</label>
-        <select id="department" name="department">
+        <!-- <select id="department" name="department">
             {% for department in departments %}
                 <option value="{{ department.id }}" {% if user.department == department %}selected{% endif %}>{{ department.name }}</option>
             {% endfor %}
-        </select><br><br>
-        
+        </select><br><br> -->
+        <p>{{ user.department.name }}</p>
         <label for="phone_number">Phone Number:</label>
         <input type="text" id="phone_number" name="phone_number" value="{{ user.phone_number }}"><br><br>
 

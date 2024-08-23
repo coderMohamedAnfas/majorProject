@@ -32,7 +32,7 @@ urlpatterns = [
   path('student_approval/', views.student_approval_view, name='student_approval'),
 
      path('request_otp/', views.request_otp, name='request_otp'),
-    path('reset_password/', views.reset_password, name='reset_password'),
+    # path('reset_password/', views.reset_password, name='reset_password'),
 ]
 
 
