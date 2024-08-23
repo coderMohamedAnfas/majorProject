@@ -64,30 +64,7 @@ def request_otp(request):
     
     return render(request, 'request_otp.html')
 
-# Reset password view
-def reset_password(request):
-    if request.method == 'POST':
-        phone_number = request.POST.get('phone_number')
-        otp = request.POST.get('otp')
-        new_password = request.POST.get('new_password')
 
-        try:
-            staff = Staff.objects.get(phone_number=phone_number, otp=otp)
-            
-            # Check if OTP is still valid (e.g., within 10 minutes)
-            if staff.otp_generated_at and now() > staff.otp_generated_at + timedelta(minutes=10):
-                messages.error(request, 'OTP has expired.')
-            else:
-                staff.set_password(new_password)
-                staff.otp = None  # Clear the OTP after use
-                staff.save()
-                messages.success(request, 'Password reset successfully.')
-                return redirect('login')
-        except Staff.DoesNotExist:
-            messages.error(request, 'Invalid OTP or phone number.')
-    
-    return render(request, 'reset_password.html')
-#  otp features and password reset ends here
 
 def student_id_preview(request):
     department_id = request.GET.get('department')
