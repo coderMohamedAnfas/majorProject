@@ -149,30 +149,35 @@
 
                     <!-- Staff Login Fields -->
                     <div id="staff_fields" class="d-none">
-                        <div class="mb-3">
-                            <label for="phone_number" class="form-label">Phone Number</label>
-                            <input type="text" class="form-control" id="phone_number" name="phone_number">
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="auth_method" class="form-label">Login with</label>
-                            <select class="form-select" id="auth_method" name="auth_method" required>
-                                <option value="password">Password</option>
-                                <option value="otp">OTP</option>
-                            </select>
-                        </div>
-                    
-                        <div id="password_field" class="mb-3">
-                            <label for="password" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="password" name="password">
-                        </div>
-                    
-                        <div id="otp_field" class="mb-3 d-none">
-                            <label for="otp" class="form-label">OTP</label>
-                            <input type="text" class="form-control" id="otp" name="otp">
-                        </div>
-                    </div>
-                    
+    <div class="mb-3">
+        <label for="phone_number" class="form-label">Phone Number</label>
+        <input type="text" class="form-control" id="phone_number" name="phone_number">
+    </div>
+    
+    <div class="mb-3">
+        <label for="auth_method" class="form-label">Login with</label>
+        <select class="form-select" id="auth_method" name="auth_method" required>
+            <option value="password">Password</option>
+            <option value="otp">OTP</option>
+        </select>
+    </div>
+
+    <div id="password_field" class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input type="password" class="form-control" id="password" name="password">
+    </div>
+
+    <div id="otp_field" class="mb-3 d-none">
+        <label for="otp" class="form-label">OTP</label>
+        <input type="text" class="form-control" id="otp" name="otp">
+    </div>
+</div>
+<div class="d-grid gap-2">
+    <!-- This is the Request OTP button, initially hidden -->
+    <a href="{% url 'request_otp' %}" id="request_otp_button" class="btn btn-secondary d-none">Request OTP</a>
+    <a href="{% url 'reset_password' %}"  id="reset_password" class="btn btn-link">Forgot Password?</a>
+</div>
+
 
                     <!-- Submit Button -->
                     <div class="d-grid gap-2">
@@ -199,19 +204,27 @@
                 staffFields.classList.add('d-none');
             }
         });
-
+    
         document.getElementById('auth_method').addEventListener('change', function () {
             var passwordField = document.getElementById('password_field');
             var otpField = document.getElementById('otp_field');
-
+            var requestOtpButton = document.getElementById('request_otp_button');
+            var reset_password = document.getElementById('reset_password')
             if (this.value === 'password') {
                 passwordField.classList.remove('d-none');
                 otpField.classList.add('d-none');
+                requestOtpButton.classList.add('d-none');
             } else if (this.value === 'otp') {
                 passwordField.classList.add('d-none');
+                reset_password.classList.add('d-none');
                 otpField.classList.remove('d-none');
+                requestOtpButton.classList.remove('d-none');
             }
         });
+    
+        // Initialize the form based on the default selection
+        document.getElementById('auth_method').dispatchEvent(new Event('change'));
     </script>
+    
 </body>
 </html>

@@ -1,4 +1,10 @@
+
 <form method="POST" action="{% url 'request_otp' %}">
+    <div>
+        {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
+    </div>
     {% csrf_token %}
     <div class="mb-3">
         <label for="phone_number" class="form-label">Phone Number</label>

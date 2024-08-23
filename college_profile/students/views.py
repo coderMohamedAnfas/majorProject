@@ -26,6 +26,24 @@ from django.core.mail import send_mail
 from datetime import timedelta
 from django.utils.timezone import now
 
+def generate_otp():
+    return str(random.randint(100000, 999999))
+
+# Send OTP via email
+def send_otp_via_email(otp, email):
+    subject = 'Your OTP Code'
+    message = (
+        f'Your OTP code is {otp}. Please use this to login.\n\n'
+        'Note: This OTP is valid for 10 minutes. If it expires, you will need to request a new OTP.'
+    )
+    try:
+        send_mail(subject, message, 'mohamedanfas7578@gmail.com', [email])
+        print('OTP sent successfully')
+    except Exception as e:
+        print(f'Failed to send OTP: {e}')
+        raise
+
+# Request OTP view
 def request_otp(request):
     if request.method == 'POST':
         phone_number = request.POST.get('phone_number')
@@ -35,22 +53,18 @@ def request_otp(request):
             staff.otp = otp
             staff.otp_generated_at = now()
             staff.save()
+
             send_otp_via_email(otp, staff.email)
             messages.success(request, 'OTP sent to your email.')
             return redirect('login')
         except Staff.DoesNotExist:
             messages.error(request, 'Phone number not registered.')
-            return redirect('request_otp')
+        except Exception as e:
+            messages.error(request, f'Failed to send OTP: {str(e)}')
+    
     return render(request, 'request_otp.html')
 
-def generate_otp():
-    return str(random.randint(100000, 999999))
-
-def send_otp_via_email(otp, email):
-    subject = 'Your OTP Code'
-    message = f'Your OTP code is {otp}. Please use this to login.'
-    send_mail(subject, message, 'noreply@example.com', [email])
-
+# Reset password view
 def reset_password(request):
     if request.method == 'POST':
         phone_number = request.POST.get('phone_number')
@@ -59,16 +73,20 @@ def reset_password(request):
 
         try:
             staff = Staff.objects.get(phone_number=phone_number, otp=otp)
-            staff.set_password(new_password)
-            staff.otp = None
-            staff.save()
-            messages.success(request, 'Password reset successfully.')
-            return redirect('login')
+            
+            # Check if OTP is still valid (e.g., within 10 minutes)
+            if staff.otp_generated_at and now() > staff.otp_generated_at + timedelta(minutes=10):
+                messages.error(request, 'OTP has expired.')
+            else:
+                staff.set_password(new_password)
+                staff.otp = None  # Clear the OTP after use
+                staff.save()
+                messages.success(request, 'Password reset successfully.')
+                return redirect('login')
         except Staff.DoesNotExist:
             messages.error(request, 'Invalid OTP or phone number.')
     
     return render(request, 'reset_password.html')
-
 #  otp features and password reset ends here
 
 def student_id_preview(request):

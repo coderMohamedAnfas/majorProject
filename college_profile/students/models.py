@@ -37,7 +37,7 @@ class CustomUserManager(BaseUserManager):
 #         user.set_password(date_of_birth.strftime('%Y-%m-%d'))  # Set DOB as password
 #         user.save(using=self._db)
 #         return user
-from datetime import datetime
+from datetime import datetime, timezone
 
 class CustomStudentManager(BaseUserManager):
     def create_user(self, admission_no=None, date_of_birth=None, **extra_fields):
@@ -130,6 +130,7 @@ class Student(AbstractUser):
         return self.admission_no
 
 # Staff Model
+from django.utils import timezone
 class Staff(AbstractUser):
     DESIGNATION_CHOICES = [
         ('Admin','Admin'),
@@ -168,6 +169,11 @@ class Staff(AbstractUser):
 
     def __str__(self):
         return self.phone_number
+    
+    def is_otp_expired(self):
+        if not self.otp_generated_at:
+            return True
+        return (timezone.now() - self.otp_generated_at) > timezone.timedelta(minutes=10)
 
 # Automatic Department Creation
 def create_departments(sender, **kwargs):
