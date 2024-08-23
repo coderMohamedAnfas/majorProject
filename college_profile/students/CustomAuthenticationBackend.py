@@ -121,6 +121,8 @@ class CustomAuthenticationBackend(BaseBackend):
                     return staff
                 elif otp and staff.otp == otp:
                     # Add logic to invalidate OTP if necessary
+                    staff.otp = None
+                    staff.save()
                     return staff
             except Staff.DoesNotExist:
                 logger.warning(f"Staff with phone number {phone_number} does not exist.")

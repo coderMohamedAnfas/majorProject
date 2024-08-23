@@ -208,6 +208,7 @@ def student_profile_view(request):
     return render(request, 'students/profile.html', {'departments': departments, 'user': student}) 
   
 def staff_profile_view(request):
+    
     if not request.user.is_authenticated or not isinstance(request.user, Staff):
         return redirect('login')
 
@@ -230,7 +231,7 @@ def create_student(request):
         try:
             Student.objects.create_user(
                     admission_no=admission_no,
-                    date_of_birth=date_of_birth,)
+                    date_of_birth= datetime.strptime(date_of_birth, '%Y-%m-%d').date(),)
             messages.success(request,"student created")
         except:
             messages.warning(request,"MUST BE VALID CREDITIONALS !!!!!")
@@ -305,15 +306,17 @@ def create_staff(request):
         phone_number = request.POST.get('ph_no')
         # email = request.POST.get('email')
         pwd = request.POST.get('password')
+        desg = request.POST.get('designation')
         try:
             s = Staff.objects.create_user(
                     phone_number=phone_number,
-                    password=pwd,)
+                    password=pwd,
+                    designation = desg)
             messages.success(request,"staff created")
         except:
             messages.warning(request,"MUST BE VALID CREDITIONALS !!!!!")
     # Logic for creating staff individually
-    return render(request, 'create_staff.html')
+    return redirect('staff_management')
 
 def upload_staff(request):
     if request.method == 'POST':
@@ -457,3 +460,14 @@ def home_view(request):
         'departments': Department.objects.all(),
         'students': students,
     })
+def approve_student(request, student_id):
+    student = get_object_or_404(Student, id=student_id)
+    student.is_approved = True
+    student.save()
+    return redirect('admin_dashboard')
+
+def reject_student(request, student_id):
+    student = get_object_or_404(Student, id=student_id)
+    student.is_approved = False
+    student.save()
+    return redirect('admin_dashboard')

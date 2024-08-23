@@ -20,7 +20,8 @@ urlpatterns = [
     path('student_management/', views.student_management, name='student_management'),
     path('create_student/', views.create_student, name='create_student'),
     path('upload_students/', views.upload_students, name='upload_students'),
-
+ path('admin/student/approve/<int:student_id>/', views.approve_student, name='approve_student'),
+    path('admin/student/reject/<int:student_id>/', views.reject_student, name='reject_student'),
     path('staff_management/', views.staff_management, name='staff_management'), 
     path('create_staff/', views.create_staff, name='create_staff'), 
 

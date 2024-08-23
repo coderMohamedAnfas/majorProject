@@ -28,7 +28,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.43.166']
 
-
+LOGIN_URL = 'login/'
 # Application definition
 
 INSTALLED_APPS = [
@@ -146,3 +146,12 @@ AUTHENTICATION_BACKENDS = [
     'students.CustomAuthenticationBackend.CustomAuthenticationBackend',  # Replace with your actual app name and path
     'django.contrib.auth.backends.ModelBackend',  # Keep this to allow default behavior
 ]
+# settings.py
+
+# Email Backend Configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'mohamedanfas7578@gmail.com'
+EMAIL_HOST_PASSWORD = 'qbafylvgzhbizivv'
