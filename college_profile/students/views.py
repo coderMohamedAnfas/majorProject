@@ -236,10 +236,15 @@ def create_student(request):
     if request.method == 'POST':
         admission_no = request.POST.get('admission_no')
         date_of_birth = request.POST.get('date_of_birth')
+        print(type(date_of_birth))
+        
+        if isinstance(date_of_birth, str):
+            date_of_birth = datetime.strptime(date_of_birth, '%Y-%m-%d').date()
+            print(type(date_of_birth))
         try:
             Student.objects.create_user(
                     admission_no=admission_no,
-                    date_of_birth= datetime.strptime(date_of_birth, '%Y-%m-%d').date(),)
+                    date_of_birth= date_of_birth)
             messages.success(request,"student created")
         except:
             messages.warning(request,"MUST BE VALID CREDITIONALS !!!!!")

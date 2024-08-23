@@ -41,8 +41,8 @@
             font-size: 24px;
             padding: 5px 10px;
             cursor: pointer;
-            transition: transform 0.3s ease;
-            z-index: 1100;
+            transition: transform 0.2s ease;
+            z-index: 1000;
         }
         .sidebar.closed + .toggle-btn {
             left: 0;
@@ -71,6 +71,31 @@
         }
         .content.closed {
             margin-left: 0;
+        }
+        .messages li {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        .messages li.success {
+            background-color: green;
+            color: #3c763d;
+        }
+
+        .messages li.error {
+            background-color: red;
+            color: white;
+        }
+
+        .messages li.info {
+            background-color:  #196185;
+            color:white;
+        }
+
+        .messages li.warning {
+            background-color: #8a6d3b;
+            color: wheat;
         }
     </style>
 </head>

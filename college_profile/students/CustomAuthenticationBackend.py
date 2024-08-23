@@ -139,6 +139,7 @@ class CustomAuthenticationBackend(BaseBackend):
                     return None
                 
                 if check_password(dob_datetime.strftime('%Y-%m-%d'), student.password):
+                    print(type(student))
                     return student
             except Student.DoesNotExist:
                 logger.warning(f"Student with admission no {admission_no} does not exist.")

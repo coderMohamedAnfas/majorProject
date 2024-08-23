@@ -2,7 +2,13 @@
 {% block content %}
 <div class="container">
     <h2>Staff Management</h2>
-
+    {% if messages %}
+    <ul class="messages">
+      {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
     <!-- Department Filter Navbar -->
     <ul class="nav nav-pills mb-4">
         <li class="nav-item">

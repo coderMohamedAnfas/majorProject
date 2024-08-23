@@ -45,14 +45,16 @@ class CustomStudentManager(BaseUserManager):
             raise ValueError('The Admission Number field is required')
         if not date_of_birth:
             raise ValueError('The date_of_birth field is required')
-
+        # print("from models",type(date_of_birth))
         # Convert date_of_birth string to a date object if it's a string
         if isinstance(date_of_birth, str):
             date_of_birth = datetime.strptime(date_of_birth, '%Y-%m-%d').date()
-        
+            print("from models 2",type(date_of_birth))
         user = self.model(admission_no=admission_no, date_of_birth=date_of_birth, **extra_fields)
         user.set_password(date_of_birth.strftime('%Y-%m-%d'))  # Set DOB as password
         user.save(using=self._db)
+        # print("from models 3",type(date_of_birth.strftime('%Y-%m-%d')))
+        # print("user:",type(user))
         return user
 
     def create_superuser(self, admission_no=None, date_of_birth=None, **extra_fields):

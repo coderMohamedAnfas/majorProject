@@ -1,10 +1,12 @@
 
 <form method="POST" action="{% url 'request_otp' %}">
-    <div>
-        {% if error %}
-        <div class="alert alert-danger">{{ error }}</div>
-    {% endif %}
-    </div>
+    {% if messages %}
+                <ul class="messages">
+                  {% for message in messages %}
+                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                  {% endfor %}
+                </ul>
+                {% endif %}
     {% csrf_token %}
     <div class="mb-3">
         <label for="phone_number" class="form-label">Phone Number</label>
