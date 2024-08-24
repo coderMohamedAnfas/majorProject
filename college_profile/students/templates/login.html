@@ -140,7 +140,26 @@
         height: 45px;
         border-radius: 5px;
     }
-</style>
+    .messages li.success {
+            background-color: green;
+            color: #cfd6cf;
+        }
+
+        .messages li.error {
+            background-color: red;
+            color: white;
+        }
+
+        .messages li.info {
+            background-color:  #196185;
+            color:white;
+        }
+
+        .messages li.warning {
+            background-color: #8a6d3b;
+            color: wheat;
+        }
+    </style>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
@@ -148,12 +167,14 @@
         <div class="row justify-content-center">
             <div class="col-md-6">
                 <h2 class="text-center">Login</h2>
-                <form method="POST" action="{% url 'login' %}">
+                <form method="POST" action="">
                     {% csrf_token %}
                     
                     <!-- Error Display -->
-                    {% if error %}
-                        <div class="alert alert-danger">{{ error }}</div>
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                        {% endfor %}
                     {% endif %}
 
                     <!-- User Type Selection -->
@@ -180,34 +201,35 @@
 
                     <!-- Staff Login Fields -->
                     <div id="staff_fields" class="d-none">
-    <div class="mb-3">
-        <label for="phone_number" class="form-label">Phone Number</label>
-        <input type="text" class="form-control" id="phone_number" name="phone_number">
-    </div>
-    
-    <div class="mb-3">
-        <label for="auth_method" class="form-label">Login with</label>
-        <select class="form-select" id="auth_method" name="auth_method" required>
-            <option value="password">Password</option>
-            <option value="otp">OTP</option>
-        </select>
-    </div>
+                        <div class="mb-3">
+                            <label for="phone_number" class="form-label">Phone Number</label>
+                            <input type="text" class="form-control" id="phone_number" name="phone_number">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="auth_method" class="form-label">Login with</label>
+                            <select class="form-select" id="auth_method" name="auth_method" required>
+                                <option value="password">Password</option>
+                                <option value="otp">OTP</option>
+                            </select>
+                        </div>
 
-    <div id="password_field" class="mb-3">
-        <label for="password" class="form-label">Password</label>
-        <input type="password" class="form-control" id="password" name="password">
-    </div>
+                        <div id="password_field" class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" name="password">
+                        </div>
 
-    <div id="otp_field" class="mb-3 d-none">
-        <label for="otp" class="form-label">OTP</label>
-        <input type="text" class="form-control" id="otp" name="otp">
-    </div>
-</div>
-<div class="d-grid gap-2">
-    <a href="{% url 'request_otp' %}" id="request_otp_button" class="btn btn-secondary d-none">Request OTP</a>
-    <a href="{% url 'request_otp' %}"  id="reset_password" class="btn btn-link d-none">Forgot Password?</a>
-</div>
+                        <div id="otp_field" class="mb-3 d-none">
+                            <label for="otp" class="form-label">OTP</label>
+                            <input type="text" class="form-control" id="otp" name="otp">
+                        </div>
+                    </div>
 
+                    <!-- Request OTP Button -->
+                    <div class="d-grid gap-2">
+                        <button type="submit" id="request_otp_button" formaction="{% url 'request_otp' %}" formmethod="post" class="btn btn-secondary d-none">Request OTP</button>
+                        <a href="{% url 'forget_password' %}"  id="reset_password" class="btn btn-link d-none">Forgot Password?</a>
+                    </div>
 
                     <!-- Submit Button -->
                     <div class="d-grid gap-2">
@@ -239,22 +261,23 @@
             var passwordField = document.getElementById('password_field');
             var otpField = document.getElementById('otp_field');
             var requestOtpButton = document.getElementById('request_otp_button');
-            // var reset_password = document.getElementById('reset_password')
+            var resetPasswordLink = document.getElementById('reset_password');
+            
             if (this.value === 'password') {
                 passwordField.classList.remove('d-none');
                 otpField.classList.add('d-none');
                 requestOtpButton.classList.add('d-none');
+                resetPasswordLink.classList.remove('d-none');
             } else if (this.value === 'otp') {
                 passwordField.classList.add('d-none');
-                // reset_password.classList.add('d-none');
                 otpField.classList.remove('d-none');
                 requestOtpButton.classList.remove('d-none');
+                resetPasswordLink.classList.add('d-none');
             }
         });
     
         // Initialize the form based on the default selection
         document.getElementById('auth_method').dispatchEvent(new Event('change'));
     </script>
-    
 </body>
 </html>

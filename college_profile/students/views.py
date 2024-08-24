@@ -29,6 +29,29 @@ from django.utils.timezone import now
 def generate_otp():
     return str(random.randint(100000, 999999))
 
+def send_html_via_email(email):
+    html_message = """
+    <html>
+    <body>
+        <h1 style="color: #333;">Welcome to Our Service</h1>
+        <p>We are glad to have you on board.</p>
+        <p>Here is some <strong>important</strong> information:</p>
+        <ul>
+            <li>First item</li>
+            <li>Second item</li>
+        </ul>
+        <p>Best regards,<br>Your Company</p>
+    </body>
+    </html>
+    """
+    send_mail(subject="Reset Password",message=" Thanks for using this feature",from_email='mohamedanfas7578@gmail.com',recipient_list=[email],html_message=html_message)
+
+def forgot_pass(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        send_html_via_email(email)    
+    return render(request,'forgot_password.html')
+
 # Send OTP via email
 def send_otp_via_email(otp, email):
     subject = 'Your OTP Code'
