@@ -181,7 +181,7 @@
                     <div class="mb-3">
                         <label for="user_type" class="form-label">Select User Type</label>
                         <select class="form-select" id="user_type" name="user_type" required>
-                            <option value="" selected>Select user type</option>
+                            <option value="" disabled selected>Select user type</option>
                             <option value="student">Student</option>
                             <option value="staff">Staff</option>
                         </select>
@@ -205,12 +205,12 @@
                             <label for="phone_number" class="form-label">Phone Number</label>
                             <input type="text" class="form-control" id="phone_number" name="phone_number">
                         </div>
-                        
+                        {% if otp %}
                         <div class="mb-3">
                             <label for="auth_method" class="form-label">Login with</label>
                             <select class="form-select" id="auth_method" name="auth_method" required>
                                 <option value="password">Password</option>
-                                <option value="otp">OTP</option>
+                                <option selected value="otp">OTP</option>
                             </select>
                         </div>
 
@@ -221,10 +221,29 @@
 
                         <div id="otp_field" class="mb-3 d-none">
                             <label for="otp" class="form-label">OTP</label>
-                            <input type="text" class="form-control" id="otp" name="otp">
+                            <input type="text" value="{{ otp }}" class="form-control" id="otp" name="otp">
                         </div>
                     </div>
+                    {% else %}
+                    <div class="mb-3">
+                        <label for="auth_method" class="form-label">Login with</label>
+                        <select class="form-select" id="auth_method" name="auth_method" required>
+                            <option value="password">Password</option>
+                            <option value="otp">OTP</option>
+                        </select>
+                    </div>
 
+                    <div id="password_field" class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password">
+                    </div>
+
+                    <div id="otp_field" class="mb-3 d-none">
+                        <label for="otp" class="form-label">OTP</label>
+                        <input type="text" value="{{ otp }}" class="form-control" id="otp" name="otp">
+                    </div>
+                    </div>
+                    {% endif %}
                     <!-- Request OTP Button -->
                     <div class="d-grid gap-2">
                         <button type="submit" id="request_otp_button" formaction="{% url 'request_otp' %}" formmethod="post" class="btn btn-secondary d-none">Request OTP</button>

@@ -24,33 +24,43 @@ import random
 from django.core.mail import send_mail
 
 from datetime import timedelta
+import django.utils.timezone as tm
 from django.utils.timezone import now
 
 def generate_otp():
     return str(random.randint(100000, 999999))
 
-def send_html_via_email(email):
-    html_message = """
+def send_html_via_email(email,otp):
+    now = datetime.now()
+    
+    # Calculate the time 10 minutes later
+    ten_minutes_later = now + timedelta(minutes=10)
+    
+    # Format the times for display
+    timefrom = now.strftime('%d-%m-%Y %H:%M')
+    timeto = ten_minutes_later.strftime('%d-%m-%Y %H:%M')
+    html_message = f"""
     <html>
     <body>
         <h1 style="color: #333;">Welcome to Our Service</h1>
-        <p>We are glad to have you on board.</p>
-        <p>Here is some <strong>important</strong> information:</p>
-        <ul>
-            <li>First item</li>
-            <li>Second item</li>
-        </ul>
-        <p>Best regards,<br>Your Company</p>
+    <p>Hello,</p>
+    <p>Your OTP code is <strong>{otp}</strong>. Please use this code to complete your login process.</p>
+    <p><strong>Important:</strong> This OTP is valid from <strong>{timefrom}</strong> to <strong>{timeto}</strong>. If the OTP expires, you will need to request a new one.</p>
+    
+    <p>Thank you,<br>GPTC Palakkad</p>
+
     </body>
     </html>
     """
     send_mail(subject="Reset Password",message=" Thanks for using this feature",from_email='mohamedanfas7578@gmail.com',recipient_list=[email],html_message=html_message)
+
 
 def forgot_pass(request):
     if request.method == 'POST':
         email = request.POST.get('email')
         send_html_via_email(email)    
     return render(request,'forgot_password.html')
+
 
 # Send OTP via email
 def send_otp_via_email(otp, email):
@@ -60,7 +70,8 @@ def send_otp_via_email(otp, email):
         'Note: This OTP is valid for 10 minutes. If it expires, you will need to request a new OTP.'
     )
     try:
-        send_mail(subject, message, 'mohamedanfas7578@gmail.com', [email])
+        # send_mail(subject, message, 'mohamedanfas7578@gmail.com', [email])
+        send_html_via_email(email,otp)    
         print('OTP sent successfully')
     except Exception as e:
         print(f'Failed to send OTP: {e}')
@@ -504,11 +515,15 @@ def home_view(request):
         'departments': Department.objects.all(),
         'students': students,
     })
+
+
 def approve_student(request, student_id):
     student = get_object_or_404(Student, id=student_id)
     student.is_approved = True
     student.save()
     return redirect('admin_dashboard')
+
+
 
 def reject_student(request, student_id):
     student = get_object_or_404(Student, id=student_id)
